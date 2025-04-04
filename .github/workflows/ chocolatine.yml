@@ -1,5 +1,8 @@
 name: Coding Style Check
 
+env:
+  MIRROR_URL: "git@github.com:EpitechPGEPromo2029/B-DOP-200-TLS-2-1-chocolatine-suleyman.laarabi.git"
+  EXECUTABLES: ""
 on:
   push:
     branches: ["ga-ignore-*"]
@@ -17,5 +20,14 @@ jobs:
       - name: Run a one-line script
         run: |
           check.sh $(pwd) $(pwd)
-          echo $(cat coding-style-report.log)
-          echo "::error title=je sais pas, file=rjjf line=12::COUCOU"
+
+  push_to_mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: pixta-dev/repository-mirroring-action
+        with:
+          target_repo_url: ${{ env.MIRROR_URL }}
+          ssh_private_key: ${{ secrets.CODECOMMIT_SSH_PRIVATE_KEY }}
