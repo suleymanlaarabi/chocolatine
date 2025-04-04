@@ -24,10 +24,10 @@ jobs:
   push_to_mirror:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: pixta-dev/repository-mirroring-action
+      - uses: pixta-dev/repository-mirroring-action@1
         with:
           target_repo_url: ${{ env.MIRROR_URL }}
           ssh_private_key: ${{ secrets.CODECOMMIT_SSH_PRIVATE_KEY }}
