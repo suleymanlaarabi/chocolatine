@@ -7,3 +7,9 @@
 
 all:
 	gcc main.c
+
+clean:
+	rm -f coding-style-reports.log
+
+fclean: clean
+	rm -f a.out
