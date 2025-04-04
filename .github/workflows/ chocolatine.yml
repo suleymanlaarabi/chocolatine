@@ -48,8 +48,8 @@ jobs:
         run: make clean
       - name: Check executables
         run: |
-          IFS=',' read -ra execs <<< "${EXECUTABLES}"
-          for file in "${execs[@]}"; do
+          IFS=','; execs=$(echo "$EXECUTABLES")
+          for file in $execs; do
             if [ ! -x "$file" ]; then
               echo "::error file=$file::Missing or not executable: $file"
               exit 1
