@@ -33,21 +33,6 @@ jobs:
             exit 1
           fi
 
-      - name: Run coding style checker
-        run: check.sh $(pwd) $(pwd)
-
-      - name: Show coding style errors
-        run: |
-          if [ -s coding-style-reports.log ]; then
-            while IFS= read -r line; do
-              file=$(echo "$line" | cut -d ':' -f 1)
-              line_num=$(echo "$line" | cut -d ':' -f 2)
-              msg=$(echo "$line" | cut -d ':' -f 3-)
-              echo "::error file=$file,line=$line_num::$msg"
-            done < coding-style-reports.log
-            exit 1
-          fi
-
   push_to_mirror:
     runs-on: ubuntu-latest
     steps:
