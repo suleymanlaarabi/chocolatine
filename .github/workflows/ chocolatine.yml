@@ -10,11 +10,10 @@ on:
 env:
   MIRROR_URL: "git@github.com:EpitechPGEPromo2029/B-DOP-200-TLS-2-1-chocolatine-suleyman.laarabi.git"
   EXECUTABLES: "a.out"
-  IS_MIRROR: ${{ github.repository == 'EpitechPGEPromo2029/B-DOP-200-TLS-2-1-chocolatine-suleyman.laarabi' }}
 
 jobs:
   check_coding_style:
-    if: ${{ env.IS_MIRROR != 'true' }}
+    if: github.repository != 'EpitechPGEPromo2029/B-DOP-200-TLS-2-1-chocolatine-suleyman.laarabi'
     runs-on: ubuntu-latest
     container: ghcr.io/epitech/coding-style-checker:latest
     steps:
@@ -36,7 +35,7 @@ jobs:
           fi
 
   check_program_compilation:
-    if: ${{ env.IS_MIRROR != 'true' }}
+    if: github.repository != 'EpitechPGEPromo2029/B-DOP-200-TLS-2-1-chocolatine-suleyman.laarabi'
     needs: check_coding_style
     runs-on: ubuntu-latest
     container: epitechcontent/epitest-docker
@@ -58,7 +57,7 @@ jobs:
           done
 
   push_to_mirror:
-    if: ${{ github.event_name == 'push' && env.IS_MIRROR != 'true' }}
+    if: github.repository != 'EpitechPGEPromo2029/B-DOP-200-TLS-2-1-chocolatine-suleyman.laarabi'
     needs: check_program_compilation
     runs-on: ubuntu-latest
     steps:
