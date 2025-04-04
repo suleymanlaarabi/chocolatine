@@ -1,18 +1,20 @@
-name: Coding Style Check
+name: Chocolatine Workflow
 
-env:
-  MIRROR_URL: "git@github.com:EpitechPGEPromo2029/B-DOP-200-TLS-2-1-chocolatine-suleyman.laarabi.git"
-  EXECUTABLES: ""
 on:
   push:
     branches-ignore: ["ga-ignore-*"]
   pull_request:
     branches-ignore: ["ga-ignore-*"]
-
   workflow_dispatch:
+
+env:
+  MIRROR_URL: "git@github.com:EpitechPGEPromo2029/B-DOP-200-TLS-2-1-chocolatine-suleyman.laarabi.git"
+  EXECUTABLES: "a.out"
+  IS_MIRROR: ${{ github.repository == 'EpitechPGEPromo2029/B-DOP-200-TLS-2-1-chocolatine-suleyman.laarabi' }}
 
 jobs:
   check_coding_style:
+    if: env.IS_MIRROR != 'true'
     runs-on: ubuntu-latest
     container: ghcr.io/epitech/coding-style-checker:latest
     steps:
@@ -26,20 +28,46 @@ jobs:
             while IFS= read -r line; do
               path=$(echo "$line" | cut -d ':' -f1 | sed 's|^\./||')
               line_num=$(echo "$line" | cut -d ':' -f2)
-              type=$(echo "$line" | cut -d ':' -f3 | cut -d ':' -f1 | cut -d '-' -f1)
-              code=$(echo "$line" | cut -d ':' -f3 | cut -d ':' -f1)
+              type=$(echo "$line" | cut -d ':' -f3 | cut -d '-' -f1)
+              code=$(echo "$line" | cut -d ':' -f3)
               echo "::error file=$path,line=$line_num::$type coding style error: $path#L$line_num $code"
             done < coding-style-reports.log
             exit 1
           fi
 
+  check_program_compilation:
+    if: env.IS_MIRROR != 'true'
+    needs: check_coding_style
+    runs-on: ubuntu-latest
+    container: epitechcontent/epitest-docker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Build with make
+        run: timeout 120 make
+      - name: Run make clean
+        run: make clean
+      - name: Check executables
+        run: |
+          IFS=',' read -ra execs <<< "${EXECUTABLES}"
+          for file in "${execs[@]}"; do
+            if [ ! -x "$file" ]; then
+              echo "::error file=$file::Missing or not executable: $file"
+              exit 1
+            fi
+          done
+
   push_to_mirror:
+    if: github.event_name == 'push' && env.IS_MIRROR != 'true'
+    needs: check_program_compilation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: pixta-dev/repository-mirroring-action@v1
+      - name: Mirror to Epitech repository
+        uses: pixta-dev/repository-mirroring-action@v1
         with:
           target_repo_url: ${{ env.MIRROR_URL }}
           ssh_private_key: ${{ secrets.GIT_SSH_PRIVATE_KEY }}
