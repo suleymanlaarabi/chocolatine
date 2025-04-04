@@ -15,4 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run a one-line script
-        run: check.sh $(pwd) $(pwd)
+        run: |
+          check.sh $(pwd) $(pwd)
+          echo $(cat coding-style-report.log)
+          echo "::error title=je sais pas, file=rjjf line=12::COUCOU"
