@@ -18,18 +18,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Run coding style checker
         run: check.sh $(pwd) $(pwd)
-
       - name: Show coding style errors
         run: |
           if [ -s coding-style-reports.log ]; then
             while IFS= read -r line; do
-              file=$(echo "$line" | cut -d ':' -f 1)
-              line_num=$(echo "$line" | cut -d ':' -f 2)
-              msg=$(echo "$line" | cut -d ':' -f 3-)
-              echo "::error file=$file,line=$line_num::$msg"
+              path=$(echo "$line" | cut -d ':' -f1 | sed 's|^\./||')
+              line_num=$(echo "$line" | cut -d ':' -f2)
+              type=$(echo "$line" | cut -d ':' -f3 | cut -d ':' -f1 | cut -d '-' -f1)
+              code=$(echo "$line" | cut -d ':' -f3 | cut -d ':' -f1)
+              echo "::error file=$path,line=$line_num::$type coding style error: $path#L$line_num $code"
             done < coding-style-reports.log
             exit 1
           fi
