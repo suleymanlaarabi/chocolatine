@@ -14,7 +14,7 @@ env:
 
 jobs:
   check_coding_style:
-    if: env.IS_MIRROR != 'true'
+    if: ${{ env.IS_MIRROR != 'true' }}
     runs-on: ubuntu-latest
     container: ghcr.io/epitech/coding-style-checker:latest
     steps:
@@ -36,7 +36,7 @@ jobs:
           fi
 
   check_program_compilation:
-    if: env.IS_MIRROR != 'true'
+    if: ${{ env.IS_MIRROR != 'true' }}
     needs: check_coding_style
     runs-on: ubuntu-latest
     container: epitechcontent/epitest-docker
@@ -58,7 +58,7 @@ jobs:
           done
 
   push_to_mirror:
-    if: github.event_name == 'push' && env.IS_MIRROR != 'true'
+    if: ${{ github.event_name == 'push' && env.IS_MIRROR != 'true' }}
     needs: check_program_compilation
     runs-on: ubuntu-latest
     steps:
