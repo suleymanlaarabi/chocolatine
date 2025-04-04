@@ -11,9 +11,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    container: ghcr.io/epitech/coding-style-checker:latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Run a one-line script
-        run: echo Hello, world!
+        run: check.sh $(pwd) $(pwd)
